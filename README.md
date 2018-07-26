@@ -6,6 +6,25 @@ This repository contains code to perform dimensionality reduction of a variable 
 ![](<./images/workflow.png>)
 
 
+Motivation & Introduction
+===========================================================
+
+Unsupervised clustering is increasingly important for precision medicine and is being used to identify disease subtypes, predict outcomes based on similar patients and identify candidate patients for clinical trials.
+
+Commonly used dimensionality reduction techniques such as Principal Components Analysis, require a fixed length vector and a normally shaped matrix. To fit this, existing methods generally extract fixed vectors at a specific point in time or aggregate vectors using statistics to summarize change over time. Choosing a specific point in time can create a conflict between including a large sample size with low follow-up time or a small sample size with longer follow-up time. Aggregating vectors across different lengths of time can lead to time being a major factor in cluster position.
+
+We introduce a multi-task sequence to sequence deep neural network capable of receiving variable length inputs and correcting for the time since disease onset. We evaluate this network based off of its to produce useful features in a reduced dimension for unsupervised clustering.
+
+![](<./images/comorbidity_neighbors.png>)
+
+![](<./images/logistic_regression.png>)
+
+
+
+
+Process
+===========================================================
+
 There are five main parts to this process:
 
   1. Preprocessing - Feature Selection, Construction and learning of distributed representations (embeddings).
@@ -41,14 +60,20 @@ There are five main parts to this process:
       ![](<./images/collection.png>)
 
   4. Evaluation
-    - Held-out ICD9 codes - We measure enrichment of held-out labels (ICD9 codes) in identified clusters. The following metrics are computed on the clusters:
-      -  Rand Index - what percentage of clustered occurrences agree (similar to mutual information)
-      - Homogeneity - what percentage of a cluster is the dominant class?
-      - Completeness - what percentage of a class goes to a specific cluster
-      - V-Measure - 2 * (homogeneity * completeness) / (homogeneity + completeness)
+    - Held-out ICD9 codes - We measure enrichment of held-out labels (ICD9 codes) in identified clusters.
 
   5. Analysis -
     - Latent space evaluation - we also look for meaningful transformations in the latent space by passing held out sequences in all of their combinations (in attempt to identify the effect of time) as well as passing in each sequence with the opposite gender attached.
+
+
+  ### Data Preprocessing
+  We identify all members who had a minimum of one year of coverage before their initial diagnosis for a disease of interest (the index date) and at least two years of coverage after the index date. This quiescence period is designed to filter out those members who have been previously diagnosed for the disease of interest and should be altered based on the diseases of interest. Members are broken into three independent sets, 1.) a training set used to train the Seq2Seq Model, 2.) a validation set used to identify the time vector in the latent space, and 3.) a test set to evaluate the effectiveness of the model.
+
+ The initial diagnosis for the ICD code of interest is set as the index date. We then select the 24 concepts (padding for any that do not exist) and placed a neutral event (the same value for all diseases) code in the 25th place of the vector. We calculated the 100 most common diagnoses that occur more than three days after the index date and limit our prediction task to these diseases. The 25 concept vector is the initial input with three different labels, one for each task: 1.) the next five common diagnoses, 2.) the input sequence, 3.) and the time from the index date. This process is repeated for each time step moving forward (moving the index diagnosis into the 24th place and so on) until there are not enough diagnoses to fill the label vector.
+
+ ### Model
+
+![](<./images/model.png>)
 
 Required
 --------
@@ -67,7 +92,7 @@ Coming Soon
 
 References
 --------
-Keras
+Coming soon
 
 Feedback
 --------
@@ -78,4 +103,4 @@ raise a github issue with any comments or questions.
 Acknowledgements
 ----------------
 
-My work is supported by a T15 NLM Grant (4T15 LM007092-25) and funding from UCB. This repository was built while attending  Tensorflow Korea DL Jeju.
+My work is supported by a T15 NLM Grant (4T15 LM007092-25) and funding from UCB. This repository was built while attending Deep Learning Jeju organized by Tensorflow Korea (sponsored by Google, ).
