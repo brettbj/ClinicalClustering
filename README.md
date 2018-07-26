@@ -1,4 +1,4 @@
-Seq2Seq Dimensionality Reduction for Clinical Clustering
+Multitask Sequence to Sequence Networks for Clinical Clustering
 ===========================================================
 
 This repository contains code to perform dimensionality reduction of a variable length sequence and then cluster.
@@ -6,7 +6,7 @@ This repository contains code to perform dimensionality reduction of a variable 
 ![](<./images/workflow.png>)
 
 
-Motivation & Introduction
+Introduction
 ===========================================================
 
 Unsupervised clustering is increasingly important for precision medicine and is being used to identify disease subtypes, predict outcomes based on similar patients and identify candidate patients for clinical trials.
@@ -15,11 +15,14 @@ Commonly used dimensionality reduction techniques such as Principal Components A
 
 We introduce a multi-task sequence to sequence deep neural network capable of receiving variable length inputs and correcting for the time since disease onset. We evaluate this network based off of its to produce useful features in a reduced dimension for unsupervised clustering.
 
+Motivation
+===========================================================
+
+Traditional comorbidity clustering is not stable over time. In this example we show the intersection of neighbors over time (despite having reasonable classification accuracy.)
+
 ![](<./images/comorbidity_neighbors.png>)
 
 ![](<./images/logistic_regression.png>)
-
-
 
 
 Process
